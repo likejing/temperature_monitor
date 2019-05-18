@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>监测点数据查询</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
+		<link href="css/mui.min.css" rel="stylesheet" />
+		<style>
+			.bodydiv {
+				position: relative;
+				float: left;
+				width: 100%;
+				top: 0px;
+			}
+			.xiala{
+				font-size: 19px;
+			}
+			.biaogediv{
+				position: relative;
+				top: 3px;
+				float: left;
+				width: 100%;
+				margin-top: 47px;
+			}
+			.biaogeli{
+			display: table-cell;
+			position: relative;
+			float: left;
+			width: 50%;
+			background-color: #64D94C;
+			font-size: 20px;
+			}
+			.biaogeli2{
+			background-color: #FFFFFF;
+			/*white-space: nowrap;*/
+			overflow: hidden;
+			}
+			#biaoge{
+				margin-top: 0px;
+			}
+			.biaogeul{
+				position: relative;
+				width: 100%;
+				float: left;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" href="index.html"></a>
+			<h1 id="id_num" class="mui-title">#号监测点</h1>
+			<button onclick="setalarm()" class="mui-btn mui-btn-blue mui-btn-link mui-pull-right">设置报警</button>
+		</header>
+		<div class="biaogediv">
+			<ul class="mui-table-view">
+				<li class="mui-table-view-cell biaogeli">
+					时间
+				</li>
+				<li class="mui-table-view-cell biaogeli">
+					温度
+				</li>
+			</ul>
+		</div>
+		<div id="biaoge" class="biaogediv">
+		</div>
+	</body>
+	<script src="js/mui.min.js"></script>
+	<script type="text/javascript" src="js/mui.picker.min.js"></script>
+	<script type="text/javascript">
+		var id_num = document.getElementById("id_num");
+		var biaoge = document.getElementById("biaoge");
+		var str = location.href; //取得整个地址栏
+		var num = str.indexOf("?")
+		var id = str.substr(num + 4); //取得id参数   stringvar.substr(start [, length ]
+		id_num.innerHTML = id + "号监测点";
+
+		function GetAllInfo() {
+			var requestinfo = {
+				id: id
+			};
+			mui.post('http://localhost:8080/Temperature/GetAllTemperature', requestinfo, function(data) {
+				var states = JSON.stringify(data[0].states);
+				states = states.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+				if (states == "success") {
+					var result = temperature.split(",");
+					var time_display = document.getElementById("time");
+					time_display.innerHTML = "更新时间：" + time;
+					for (var i = 1; i < data.length; i++) {
+						//整理接收的数据格式
+						var time = JSON.stringify(data[i].time).substr(1, 16);
+						var temperature = JSON.stringify(data[i].temperature);
+						temperature = temperature.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+						//添加ul
+						var ul = document.createElement("ul");
+						var li = document.createElement("li");
+						var li_2 = document.createElement("span");
+
+						biaoge.appendChild(ul);
+						ul.appendChild(li);
+						ul.appendChild(li_2);
+
+						ul.className = "mui-table-view";
+						li.className = "mui-table-view-cell biaogeli";
+						li_2.className = "mui-table-view-cell biaogeli";
+						li.innerHTML = time;
+						li_2.innerHTML = temperature;
+					}
+				} else {
+					alert(states);
+				}
+			}, 'json');
+		}
+		//设置报警数据
+		function setalarm() {
+			var alarmtemperature = prompt("请输入温度警戒上限", "-100");
+			if (alarmtemperature != null && alarmtemperature != "") {
+				var requestinfo = {
+					id: id,
+					alarm_value: alarmtemperature
+				};
+				mui.post('http://localhost:8080/Temperature/SetAlarmTemperature', requestinfo, function(data) {
+					var states = JSON.stringify(data[0].states);
+					states = states.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+					if (states == "success") {
+						alert("设置成功，报警温度为" + alarmtemperature);
+					} else {
+						alert(states);
+					}
+				}, 'json');
+
+			}
+		}
+
+		function getId(obj) { //获得点击button元素的id
+			var id = obj.id;
+			var childs = biaoge.childNodes;
+			for (var i = childs.length - 1; i >= 0; i--) {
+				biaoge.removeChild(childs[i]);
+			}
+			initDatabase();
+			selectdata("select * from data where num=" + id.toString() + ";");
+
+		}
+	</script>
+
+</html>

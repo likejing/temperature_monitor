@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<title>水泥温度实时监测</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+		<link rel="stylesheet" href="css/mui.min.css">
+		<link rel="stylesheet" type="text/css" href="css/iconfont.css" />
+		<style>
+			.mui-table-view .mui-table-view-cell {
+				width: 25%;
+			}
+
+			.top {
+				top: 47px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<header class="mui-bar mui-bar-nav">
+			<h1 class="mui-title">水泥温度实时监测</h1>
+			<a id="time" class="mui-icon mui-pull-right">更新时间：XXX</a>
+		</header>
+		<ul id="index" class="mui-table-view mui-grid-view mui-grid-9 top">
+		</ul>
+	</body>
+	<script src=""></script>
+	<script src="js/mui.min.js"></script>
+	<script>
+		//通过id获得ul元素
+		var ul = document.getElementById('index'); //循环添加li
+		for (var i = 0; i < 64; i++) {
+			//添加 li
+			var li = document.createElement("li");
+			var a = document.createElement("a");
+			var span = document.createElement("span");
+			var div = document.createElement("div");
+			ul.appendChild(li);
+			li.appendChild(a);
+			a.appendChild(span);
+			a.appendChild(div);
+
+			var num = i + 1;
+			li.setAttribute("id", num);
+			li.className = "mui-table-view-cell mui-media mui-col-xs-4 mui-col-sm-3";
+			li.setAttribute("onclick", "getId(this)");
+			span.className = "mui-icon mui-icon-location";
+			div.setAttribute("id", "div" + num);
+			div.className = "mui-media-body";
+			div.innerHTML = num + "号,温度:" + "xxx";
+		}
+		init_data();
+		//获取数据并初始化
+		function init_data() {
+			var requestinfo = {};
+			mui.post('http://localhost:8080/Temperature/GetNewTemperature', requestinfo, function(data) {
+				var states = JSON.stringify(data[0].states);
+				var time = JSON.stringify(data[1].time).substr(1, 16);
+				states = states.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+				if (states == "success") {
+					var time_display = document.getElementById("time");
+					time_display.innerHTML = "更新时间：" + time;
+					for (var i = 1; i < data.length; i++) {
+						//整理接收的数据格式
+						var point_id = JSON.stringify(data[i].point_id);
+						var temperature = JSON.stringify(data[i].temperature);
+						var is_alarm = JSON.stringify(data[i].is_alarm);
+						point_id = point_id.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+						temperature = temperature.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+						is_alarm = is_alarm.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
+						var id_num = document.getElementById("div" + point_id);
+						id_num.innerHTML = point_id + "号,温度:" + temperature;
+						if (is_alarm == "yes") {
+							var alarm_color = document.getElementById(point_id);
+							alarm_color.setAttribute('style', 'background:red');
+						}
+					}
+				} else {
+					alert(states);
+				}
+			}, 'json');
+		}
+
+		function getId(obj) { //获得点击元素的id
+			var id = obj.id;
+			location.href = "query.html?id=" + id;
+		}
+	</script>
+
+</html>
