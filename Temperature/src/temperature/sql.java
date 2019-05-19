@@ -6,7 +6,7 @@ import java.sql.*;
 public class sql {
 	public static Connection getConn() {
 		String driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-		String url = "jdbc:sqlserver://127.0.0.1:1433;databaseName=smart_platform;";
+		String url = "jdbc:sqlserver://127.0.0.1:2019;databaseName=smart_platform;";
 		String username="sa";
 		String password="666666";
 		Connection conn = null;
@@ -113,10 +113,11 @@ public class sql {
 		String[][] data= new String[rows][cols];
 		Connection conn = getConn();
 		Statement st;
+		ResultSet rs;
 		String sql = "select "+keys+" from " + tablename +" "+condition +";";
 		try {
-			st = (Statement) conn.createStatement();
-			ResultSet rs = st.executeQuery(sql);
+			st = conn.createStatement();
+			rs = st.executeQuery(sql);
 			int col = rs.getMetaData().getColumnCount();
 			// 将读取的数据存入data中
 			int i = 0;

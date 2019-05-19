@@ -48,7 +48,7 @@ public class GetAllTemperature extends HttpServlet {
     	String[][] announceinfo;
     	// 从表中获取某id的time，temperature记录
     	try {
-    		announceinfo=sql.select(" timestamp,data_value ","telemetry_data_his","where point_id = "+id,100, 2);
+    		announceinfo=sql.select(" timestamp,data_value ","telemetry_data_his","where point_id = "+id+" order by timestamp desc",336, 2);
     		objecthead.addProperty("states", "success");  //添加获取成功状态
         	array.add(objecthead);
         	int i=0;

@@ -26,12 +26,15 @@
 			<h1 class="mui-title">水泥温度实时监测</h1>
 			<a id="time" class="mui-icon mui-pull-right">更新时间：XXX</a>
 		</header>
+		<audio id="bgMusic">
+			<source src="mp3/alarm.mp3" type="audio/mp3">
+		</audio>
 		<ul id="index" class="mui-table-view mui-grid-view mui-grid-9 top">
 		</ul>
 	</body>
-	<script src=""></script>
 	<script src="js/mui.min.js"></script>
 	<script>
+		var audio = document.getElementById("bgMusic");
 		//通过id获得ul元素
 		var ul = document.getElementById('index'); //循环添加li
 		for (var i = 0; i < 64; i++) {
@@ -58,13 +61,14 @@
 		//获取数据并初始化
 		function init_data() {
 			var requestinfo = {};
-			mui.post('http://localhost:8080/Temperature/GetNewTemperature', requestinfo, function(data) {
+			mui.post('http://106.12.158.221:8080/Temperature/GetNewTemperature', requestinfo, function(data) {
 				var states = JSON.stringify(data[0].states);
 				var time = JSON.stringify(data[1].time).substr(1, 16);
 				states = states.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
 				if (states == "success") {
 					var time_display = document.getElementById("time");
 					time_display.innerHTML = "更新时间：" + time;
+					var music_ok = false;
 					for (var i = 1; i < data.length; i++) {
 						//整理接收的数据格式
 						var point_id = JSON.stringify(data[i].point_id);
@@ -78,7 +82,12 @@
 						if (is_alarm == "yes") {
 							var alarm_color = document.getElementById(point_id);
 							alarm_color.setAttribute('style', 'background:red');
+							music_ok = true;
 						}
+					}
+					if (music_ok) {
+						audio.currentTime = 0;
+						audio.play();
 					}
 				} else {
 					alert(states);
