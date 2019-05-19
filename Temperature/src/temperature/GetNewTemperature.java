@@ -57,9 +57,9 @@ public class GetNewTemperature extends HttpServlet {
         		JsonObject object = new JsonObject();
         		object.addProperty("point_id",announceinfo[i][0]);
         		object.addProperty("time",announceinfo[i][1]);
-    			object.addProperty("temperature",announceinfo[i][2]);
     			int point_id=Integer.parseInt(announceinfo[i][0]);
-    			int temperature=Integer.parseInt(announceinfo[i][2].substring(0, announceinfo[i][2].length()-2));
+    			int temperature=Integer.parseInt(announceinfo[i][2].substring(0, announceinfo[i][2].length()-3));
+    			object.addProperty("temperature",temperature);
     			int alarm_value=Integer.parseInt(alarminfo[point_id-1][0]);
     			if(alarm_value>temperature){
     				object.addProperty("is_alarm","no");

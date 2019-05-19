@@ -55,7 +55,8 @@ public class GetAllTemperature extends HttpServlet {
         	while(i<announceinfo.length&&announceinfo[i][0]!=null){
         		JsonObject object = new JsonObject();
         		object.addProperty("time",announceinfo[i][0]);
-    			object.addProperty("temperature",announceinfo[i][1]);
+    			int temperature=Integer.parseInt(announceinfo[i][1].substring(0, announceinfo[i][1].length()-3));
+    			object.addProperty("temperature",temperature);
     			array.add(object);
     			i++;
         	}
