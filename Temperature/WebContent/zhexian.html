@@ -10,6 +10,7 @@
 
 	<body>
 		<header class="mui-bar mui-bar-nav">
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left" href="javascript :;" onClick="javascript :history.back(-1);"></a>
 			<h1 class="mui-title">最近一天内数据变化情况</h1>
 		</header>
 		<div class="mui-content">
@@ -33,7 +34,7 @@
 					temperature = temperature.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
 					//alert(temperature);
 					if(i<49){
-					data_grid.push(parseInt(temperature.substr(0, temperature.length - 2)));
+					data_grid.push(parseInt(temperature));
 					}
 				}
 				// var data=[];

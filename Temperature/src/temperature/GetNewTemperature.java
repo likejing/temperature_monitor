@@ -45,11 +45,11 @@ public class GetNewTemperature extends HttpServlet {
         JsonArray array = new JsonArray();
         JsonObject objecthead = new JsonObject();
     	String[][] announceinfo;
-    	String[][] alarminfo;
+    	//String[][] alarminfo;
     	// 从enternum+"announce"表中获取id,theme,text,time记录
     	try {
     		announceinfo=sql.select(" point_id,timestamp,data_value ","telemetry_data_rt"," ",64,3);
-    		alarminfo=sql.select("alarm_value","telemetry_data_alarm","", 64, 1);
+    		//alarminfo=sql.select("alarm_value","telemetry_data_alarm","", 64, 1);
     		objecthead.addProperty("states", "success");  //添加获取成功状态
         	array.add(objecthead);
         	int i=0;
@@ -57,10 +57,12 @@ public class GetNewTemperature extends HttpServlet {
         		JsonObject object = new JsonObject();
         		object.addProperty("point_id",announceinfo[i][0]);
         		object.addProperty("time",announceinfo[i][1]);
-    			int point_id=Integer.parseInt(announceinfo[i][0]);
+    			//int point_id=Integer.parseInt(announceinfo[i][0]);
     			int temperature=Integer.parseInt(announceinfo[i][2].substring(0, announceinfo[i][2].length()-3));
     			object.addProperty("temperature",temperature);
-    			int alarm_value=Integer.parseInt(alarminfo[point_id-1][0]);
+    			//int alarm_value=Integer.parseInt(alarminfo[point_id-1][0]);
+    			int alarm_value=Integer.parseInt(announceinfo[63][2].substring(0,announceinfo[63][2].length()-3));
+    			alarm_value+=25;
     			if(alarm_value>temperature){
     				object.addProperty("is_alarm","no");
     			}
