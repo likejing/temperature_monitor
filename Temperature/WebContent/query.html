@@ -91,7 +91,7 @@
 				var states = JSON.stringify(data[0].states);
 				states = states.replace(/"/g, " ").replace(/(^[\s\n\t]+|[\s\n\t]+$)/g, "");
 				if (states == "success") {
-					for (var i = data.length-1; i > 0; i--) {
+					for (var i = 1; i<data.length; i++) {
 						//整理接收的数据格式
 						var time = JSON.stringify(data[i].time).substr(1, 16);
 						var temperature = JSON.stringify(data[i].temperature);
